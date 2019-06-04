@@ -12,7 +12,7 @@
     "prepublishOnly": "yarn test && yarn build && mv dist/cjs/hatch.d.ts dist && rm dist/*/hatch.d.ts"
   },
   "devDependencies": {
-    "@topl/stable": "^0.5.21",
+    "@topl/stable": "^0.5.22",
     "@wessberg/rollup-plugin-ts": "^1.1.54",
     "nyc": "^14.1.1",
     "rollup": "^1.13.0",
@@ -21,5 +21,11 @@
   },
   "nyc": {
     "instrument": false
+  },
+  "dependencies": {
+    "@babel/traverse": "^7.4.5",
+    "@babel/types": "^7.4.4",
+    "@types/babel-traverse": "^6.25.5",
+    "@types/babel-types": "^7.0.7"
   }
 }
