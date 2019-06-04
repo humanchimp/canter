@@ -4,12 +4,7 @@ import {
   BlockStatement,
   VariableDeclaration,
   FunctionDeclaration,
-  newExpression,
-  identifier,
-  Expression,
-  FunctionExpression,
   program,
-  Statement,
   Program
 } from "@babel/types";
 import { stacking, deferred } from "./names";
@@ -39,11 +34,10 @@ export default function(filename: string = null, names: Set<string> = new Set(st
   return {
     visitor: {
       Program(path: NodePath<Program>) {
-        if (done) {
-          return;
+        if (done === false) {
+          path.replaceWith(program(canter(path.node.body, names, filename)));
+          done = true;
         }
-        path.replaceWith(program(canter(path.node.body, names, filename)));
-        done = true;
       },
 
       BlockStatement: {
@@ -75,7 +69,14 @@ export default function(filename: string = null, names: Set<string> = new Set(st
       },
 
       Identifier: {
-        exit(path: NodePath<Identifier>) {}
+        exit(path: NodePath<Identifier>) {
+          if (path.node.name.endsWith(junk)) {
+            path.node.name = path.node.name.slice(
+              0,
+              path.node.name.length - junk.length
+            );
+          }
+        }
       }
     }
   };

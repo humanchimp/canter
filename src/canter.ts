@@ -34,7 +34,7 @@ export function canter(
       stringLiteral("@topl/stable")
     ),
     ...statements,
-    exportNamedDeclaration(
+    suites.length > 0 && exportNamedDeclaration(
       variableDeclaration("const", [
         variableDeclarator(
           identifier("$suite$"),
@@ -53,5 +53,5 @@ export function canter(
       ]),
       []
     )
-  ];
+  ].filter(Boolean);
 }

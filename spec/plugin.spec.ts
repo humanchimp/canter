@@ -41,11 +41,31 @@ describe("a messy endeavor", () => {
 });
 
 it("can receive the filename as its optional second parameter", () => {
-  expect(compile(`
+  expect(
+    compile(
+      `
 describe("neat ideas", () => {
   it("should do stuff");
 })
-`, "file.js")).to.contain(`export const $suite$ = options => new Suite("file.js", options)`)
+`,
+      "file.js"
+    )
+  ).to.contain(
+    `export const $suite$ = options => new Suite("file.js", options)`
+  );
+});
+
+it("tolerates shadowing", () => {
+  expect(
+    compile(`
+{
+  function describe() {}
+
+  describe("this won't get transpiled; it's not the magical global", () => {
+    it("neither will this");
+  })
+}`)
+  ).not.to.contain("new Suite");
 });
 
 function compile(input: string, filename?: string): string {
