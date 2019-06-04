@@ -1,6 +1,6 @@
-# 🐣hatch
+# :racehorse: canter
 
-rollup + typescript boilerplate
+a compiler for [stable](https://github.com/humanchimp/stable)
 
 ## license
 
