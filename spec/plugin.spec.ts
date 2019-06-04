@@ -3,9 +3,9 @@ import babel from "@babel/core";
 import generate from "@babel/generator";
 import plugin from "../src/plugin";
 
-describe("the template tag capability", () => {
-  it("compiles the dsl into library calls", () => {
-    console.log(compile(`
+it("compiles the dsl into library calls", () => {
+  expect(
+    compile(`
 import { specimen } from "./yuck";
 
 describe("inception", () => {
@@ -31,13 +31,26 @@ describe("inception", () => {
     });
   });
 });
-`))
-  });
+
+describe("a messy endeavor", () => {
+  it("is, cleaning a stable");
 });
 
-function compile(input: string): string {
+`)
+  ).to.contain("export const $suite$ = options => new Suite(null, options)");
+});
+
+it("can receive the filename as its optional second parameter", () => {
+  expect(compile(`
+describe("neat ideas", () => {
+  it("should do stuff");
+})
+`, "file.js")).to.contain(`export const $suite$ = options => new Suite("file.js", options)`)
+});
+
+function compile(input: string, filename?: string): string {
   const ast = babel.parse(input);
-  const { visitor } = plugin();
+  const { visitor } = plugin(filename);
 
   babel.traverse(ast, visitor);
 

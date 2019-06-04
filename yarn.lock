@@ -756,6 +756,11 @@
     typescript "^3.2.2"
     ws "^7.0.0"
 
+"@topl/tack@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@topl/tack/-/tack-1.0.6.tgz#8d1e2fdfd41a25ebad0bfcb9d737f3b21cf639b7"
+  integrity sha512-S8faSIIUyRKFZTCXcfIPRKpm7I4NWQ57IOSyiHYl9vGSvyY+18bqJvebUpcv7zWk4ByA+j3XMst9CQiwi5/Dtg==
+
 "@types/babel-traverse@^6.25.5":
   version "6.25.5"
   resolved "https://registry.yarnpkg.com/@types/babel-traverse/-/babel-traverse-6.25.5.tgz#6d293cf7523e48b524faa7b86dc3c488191484e5"

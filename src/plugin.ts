@@ -17,7 +17,7 @@ import { canter } from "./canter";
 
 const stableDsl = [...stacking, ...deferred];
 
-export default function(names: Set<string> = new Set(stableDsl)) {
+export default function(filename: string = null, names: Set<string> = new Set(stableDsl)) {
   const junk = `_$stable$`;
 
   function mangleShadowedNameVisitor(name: string): Visitor {
@@ -42,7 +42,7 @@ export default function(names: Set<string> = new Set(stableDsl)) {
         if (done) {
           return;
         }
-        path.replaceWith(program(canter(path.node.body, names)));
+        path.replaceWith(program(canter(path.node.body, names, filename)));
         done = true;
       },
 

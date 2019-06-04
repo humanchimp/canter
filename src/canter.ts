@@ -1,66 +1,57 @@
 import {
+  arrowFunctionExpression,
   Statement,
-  Expression,
-  FunctionExpression,
   newExpression,
   identifier,
-  memberExpression,
-  callExpression,
   exportNamedDeclaration,
   variableDeclaration,
   variableDeclarator,
   importDeclaration,
   importSpecifier,
-  stringLiteral
+  stringLiteral,
+  nullLiteral
 } from "@babel/types";
+import { partition } from "@topl/tack";
 import { cascade } from "./cascade";
 
-export function canter(body: Statement[], names: Set<string>): Statement[] {
-  const { statements, suites } = body.reduce(
-    (
-      memo: { statements: Statement[]; suites: Expression[] },
-      statement: Statement
-    ) => {
-      if (
-        statement.type === "ExpressionStatement" &&
-        statement.expression.type === "CallExpression" &&
-        statement.expression.callee.type === "Identifier" &&
-        names.has(statement.expression.callee.name)
-      ) {
-        const [description, thunk]: [Expression, FunctionExpression] = statement
-          .expression.arguments as [Expression, FunctionExpression];
-
-        memo.suites.push(
-          cascade(
-            newExpression(identifier("Suite"), [description]),
-            thunk.body.body,
-            names
-          )
-        );
-      } else {
-        memo.statements.push(statement);
-      }
-      return memo;
-    },
-    { statements: [], suites: [] }
+export function canter(
+  body: Statement[],
+  names: Set<string>,
+  filename: string | null = null
+): Statement[] {
+  const [suites, statements] = partition(
+    statement =>
+      statement.type === "ExpressionStatement" &&
+      statement.expression.type === "CallExpression" &&
+      statement.expression.callee.type === "Identifier" &&
+      names.has(statement.expression.callee.name),
+    body
   );
 
-  return statements.concat(
+  return [
     importDeclaration(
       [importSpecifier(identifier("Suite"), identifier("Suite"))],
       stringLiteral("@topl/stable")
     ),
+    ...statements,
     exportNamedDeclaration(
       variableDeclaration("const", [
         variableDeclarator(
           identifier("$suite$"),
-          callExpression(
-            memberExpression(identifier("Suite"), identifier("of")),
-            suites
+          arrowFunctionExpression(
+            [identifier("options")],
+            cascade(
+              newExpression(identifier("Suite"), [
+                filename == null ? nullLiteral() : stringLiteral(filename),
+                identifier("options")
+              ]),
+              suites,
+              names
+            )
           )
         )
       ]),
       []
     )
-  );
+  ];
 }
