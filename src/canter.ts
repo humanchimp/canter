@@ -17,7 +17,8 @@ import { cascade } from "./cascade";
 export function canter(
   body: Statement[],
   names: Set<string>,
-  filename: string | null = null
+  filename: string | null = null,
+  frameworkId: string = "@topl/hiho"
 ): Statement[] {
   const [suites, statements] = partition(
     statement =>
@@ -31,27 +32,28 @@ export function canter(
   return [
     importDeclaration(
       [importSpecifier(identifier("Suite"), identifier("Suite"))],
-      stringLiteral("@topl/stable")
+      stringLiteral(frameworkId)
     ),
     ...statements,
-    suites.length > 0 && exportNamedDeclaration(
-      variableDeclaration("const", [
-        variableDeclarator(
-          identifier("$suite$"),
-          arrowFunctionExpression(
-            [identifier("options")],
-            cascade(
-              newExpression(identifier("Suite"), [
-                filename == null ? nullLiteral() : stringLiteral(filename),
-                identifier("options")
-              ]),
-              suites,
-              names
+    suites.length > 0 &&
+      exportNamedDeclaration(
+        variableDeclaration("const", [
+          variableDeclarator(
+            identifier("$suite$"),
+            arrowFunctionExpression(
+              [identifier("options")],
+              cascade(
+                newExpression(identifier("Suite"), [
+                  filename == null ? nullLiteral() : stringLiteral(filename),
+                  identifier("options")
+                ]),
+                suites,
+                names
+              )
             )
           )
-        )
-      ]),
-      []
-    )
+        ]),
+        []
+      )
   ].filter(Boolean);
 }
