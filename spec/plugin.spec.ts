@@ -3,6 +3,11 @@ import babel from "@babel/core";
 import generate from "@babel/generator";
 import plugin from "../src/plugin";
 
+it("eyeball fixture", () => {
+  console.log(compile("describe('hi')"));
+  console.log(compile("describe('hi', () => {})"));
+});
+
 it("compiles the dsl into library calls", () => {
   expect(
     compile(`
@@ -37,7 +42,7 @@ describe("a messy endeavor", () => {
 });
 
 `)
-  ).to.contain("export const $suite$ = options => new Suite(null, options)");
+  ).to.contain("export const $suite$ = options => new $hihoSuite$(null, options)");
 });
 
 it("can receive the filename as its optional second parameter", () => {
@@ -51,7 +56,7 @@ describe("neat ideas", () => {
       "file.js"
     )
   ).to.contain(
-    `export const $suite$ = options => new Suite("file.js", options)`
+    `export const $suite$ = options => new $hihoSuite$("file.js", options)`
   );
 });
 
@@ -65,7 +70,7 @@ it("tolerates shadowing", () => {
     it("neither will this");
   })
 }`)
-  ).not.to.contain("new Suite");
+  ).not.to.contain("new $hihoSuite$");
 });
 
 function compile(input: string, filename?: string): string {

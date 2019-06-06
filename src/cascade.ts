@@ -53,13 +53,15 @@ export function parameters(
   id: Identifier,
   args: [Expression, Thunk],
   names: Set<string>
-): [Expression, Thunk] {
+): [Expression, Thunk?] {
   if (deferred.has(id.name)) {
     return args;
   }
   const [description, thunk] = args;
 
-  return [description, closureCapture(thunk as FunctionExpression, names)];
+  return thunk
+    ? [description, closureCapture(thunk as FunctionExpression, names)]
+    : [description];
 }
 
 export function closureCapture(

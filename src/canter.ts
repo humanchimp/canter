@@ -32,7 +32,7 @@ export function canter(
 
   return [
     importDeclaration(
-      [importSpecifier(identifier("Suite"), identifier("$hiho$Suite"))],
+      [importSpecifier(identifier("$hihoSuite$"), identifier("Suite"))],
       stringLiteral(frameworkId)
     ),
     ...statements,
@@ -44,7 +44,7 @@ export function canter(
             arrowFunctionExpression(
               [identifier("options")],
               cascade(
-                newExpression(identifier("$hiho$Suite"), [
+                newExpression(identifier("$hihoSuite$"), [
                   filename == null ? nullLiteral() : stringLiteral(filename),
                   identifier("options")
                 ]),
