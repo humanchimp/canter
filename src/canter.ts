@@ -13,7 +13,6 @@ import {
 } from "@babel/types";
 import { partition } from "@topl/tack";
 import { cascade } from "./cascade";
-import { memberExpression } from "babel-types";
 
 export function canter(
   body: Statement[],

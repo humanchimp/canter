@@ -1,3 +1,4 @@
+import generate from "@babel/generator";
 import {
   Expression,
   Statement,
@@ -10,7 +11,8 @@ import {
   ArrowFunctionExpression,
   arrowFunctionExpression,
   identifier,
-  ArrayExpression
+  ArrayExpression,
+  expressionStatement
 } from "@babel/types";
 import { deferred } from "./names";
 
@@ -20,7 +22,7 @@ type Thunk = FunctionExpression | ArrowFunctionExpression;
 
 export function cascade(
   object: Expression,
-  statements: Statement[],
+  statements: Statement[] = [],
   names: Set<string>
 ) {
   return statements
@@ -67,23 +69,31 @@ export function parameters(
 
   let [description, table, thunk] = args;
 
-  if (thunk === undefined) {
+  if (table && table.type !== "ArrayExpression") {
     [thunk, table] = [table as Thunk, thunk];
   }
 
   return [
     description,
     table,
-    thunk && closureCapture(thunk as FunctionExpression, names)
+    thunk &&
+      ("BlockStatement" !== thunk.body.type || thunk.body.body.length > 0) &&
+      closureCapture(thunk, names)
   ].filter(Boolean) as [Expression, (Table | Thunk)?, Thunk?];
 }
 
 export function closureCapture(
-  thunk: FunctionExpression,
+  thunk: Thunk,
   names: Set<string>
 ): ArrowFunctionExpression {
   return arrowFunctionExpression(
     [identifier("$suite$")],
-    cascade(identifier("$suite$"), thunk.body.body, names)
+    cascade(
+      identifier("$suite$"),
+      thunk.body.type === "BlockStatement"
+        ? thunk.body.body
+        : [expressionStatement(thunk.body)],
+      names
+    )
   );
 }

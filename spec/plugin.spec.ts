@@ -6,6 +6,9 @@ import plugin from "../src/plugin";
 it("eyeball fixture", () => {
   console.log(compile("describe('hi')"));
   console.log(compile("describe('hi', () => {})"));
+  console.log(compile("describeEach('row', [1,1,2,3,5], () => {})"));
+  console.log(compile("xdescribeEach('yo', [1,2,3])"));
+  console.log(compile("describe('nest', () => it('should work'))"));
 });
 
 it("compiles the dsl into library calls", () => {
