@@ -13,6 +13,7 @@ import {
 } from "@babel/types";
 import { partition } from "@topl/tack";
 import { cascade } from "./cascade";
+import { memberExpression } from "babel-types";
 
 export function canter(
   body: Statement[],
@@ -31,7 +32,7 @@ export function canter(
 
   return [
     importDeclaration(
-      [importSpecifier(identifier("Suite"), identifier("Suite"))],
+      [importSpecifier(identifier("Suite"), identifier("$hiho$Suite"))],
       stringLiteral(frameworkId)
     ),
     ...statements,
@@ -43,7 +44,7 @@ export function canter(
             arrowFunctionExpression(
               [identifier("options")],
               cascade(
-                newExpression(identifier("Suite"), [
+                newExpression(identifier("$hiho$Suite"), [
                   filename == null ? nullLiteral() : stringLiteral(filename),
                   identifier("options")
                 ]),
