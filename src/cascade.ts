@@ -9,9 +9,12 @@ import {
   FunctionExpression,
   ArrowFunctionExpression,
   arrowFunctionExpression,
-  identifier
+  identifier,
+  ArrayExpression
 } from "@babel/types";
 import { deferred } from "./names";
+
+type Table = ArrayExpression;
 
 type Thunk = FunctionExpression | ArrowFunctionExpression;
 
@@ -45,23 +48,34 @@ export function operator(
 
   return callExpression(
     memberExpression(object, id),
-    parameters(id, expression.arguments as [Expression, Thunk], names)
+    parameters(
+      id,
+      expression.arguments as [Expression, Table | Thunk, Thunk?],
+      names
+    )
   );
 }
 
 export function parameters(
   id: Identifier,
-  args: [Expression, Thunk],
+  args: [Expression, Table | Thunk, Thunk?],
   names: Set<string>
-): [Expression, Thunk?] {
+): [Expression, (Table | Thunk)?, Thunk?] {
   if (deferred.has(id.name)) {
     return args;
   }
-  const [description, thunk] = args;
 
-  return thunk
-    ? [description, closureCapture(thunk as FunctionExpression, names)]
-    : [description];
+  let [description, table, thunk] = args;
+
+  if (thunk === undefined) {
+    [thunk, table] = [table as Thunk, thunk];
+  }
+
+  return [
+    description,
+    table,
+    thunk && closureCapture(thunk as FunctionExpression, names)
+  ].filter(Boolean) as [Expression, (Table | Thunk)?, Thunk?];
 }
 
 export function closureCapture(
