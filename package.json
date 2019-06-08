@@ -1,6 +1,6 @@
 {
   "name": "@topl/canter",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "main": "dist/cjs/canter.js",
   "module": "dist/esm/canter.js",
   "browser": "dist/iife/canter.js",
