@@ -11,10 +11,11 @@ import {
   arrowFunctionExpression,
   identifier,
   ArrayExpression,
-  expressionStatement
+  expressionStatement,
+  SourceLocation
 } from "@babel/types";
 import { deferred } from "./names";
-import { tagLoc } from "./tag";
+import { infos } from "./tag";
 
 type Table = ArrayExpression;
 
@@ -23,7 +24,7 @@ type Thunk = FunctionExpression | ArrowFunctionExpression;
 export function cascade(
   object: Expression,
   statements: Statement[] = [],
-  names: Set<string>,
+  names: Set<string>
 ) {
   return statements
     .filter(statement => statement.type === "ExpressionStatement")
@@ -36,7 +37,7 @@ export function cascade(
     )
     .reduce(
       (memo: Expression | CallExpression, expression: CallExpression) =>
-        tagLoc(operator(memo, expression, names), expression.loc),
+        operator(memo, expression, names, expression.loc),
       object
     );
 }
@@ -45,6 +46,7 @@ export function operator(
   object: Expression,
   expression: CallExpression,
   names: Set<string>,
+  loc: SourceLocation
 ): CallExpression {
   const id = expression.callee as Identifier;
 
@@ -54,6 +56,7 @@ export function operator(
       id,
       expression.arguments as [Expression, Table | Thunk, Thunk?],
       names,
+      infos({ loc })
     )
   );
 }
@@ -62,6 +65,7 @@ export function parameters(
   id: Identifier,
   args: [Expression, Table | Thunk, Thunk?],
   names: Set<string>,
+  infos: Expression
 ): [Expression, (Table | Thunk)?, Thunk?] {
   if (deferred.has(id.name)) {
     return args;
@@ -78,13 +82,14 @@ export function parameters(
     table,
     thunk &&
       ("BlockStatement" !== thunk.body.type || thunk.body.body.length > 0) &&
-      closureCapture(thunk, names)
+      closureCapture(thunk, names),
+    infos
   ].filter(Boolean) as [Expression, (Table | Thunk)?, Thunk?];
 }
 
 export function closureCapture(
   thunk: Thunk,
-  names: Set<string>,
+  names: Set<string>
 ): ArrowFunctionExpression {
   return arrowFunctionExpression(
     [identifier("$suite$")],
@@ -93,7 +98,7 @@ export function closureCapture(
       thunk.body.type === "BlockStatement"
         ? thunk.body.body
         : [expressionStatement(thunk.body)],
-      names,
+      names
     )
   );
 }
