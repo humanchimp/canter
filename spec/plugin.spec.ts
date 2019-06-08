@@ -9,6 +9,22 @@ it("eyeball fixture", () => {
   console.log(compile("describeEach('row', [1,1,2,3,5], () => {})"));
   console.log(compile("xdescribeEach('yo', [1,2,3])"));
   console.log(compile("describe('nest', () => it('should work'))"));
+  console.log(compile(`describeEach(
+    "larger arities",
+    [
+      function binary(a, b) {},
+      function ternary(a, b, c) {},
+      function quaternary(a, b, c, d) {},
+      function veternary(h, o, r, s, e) {},
+    ],
+    testCase => {
+      it("should throw an error about too many arugments", () => {
+        expect(() => {
+          wrapTestCase(testCase);
+        }).to.throw(/too many arguments/);
+      });
+    },
+  );`));
 });
 
 it("compiles the dsl into library calls", () => {

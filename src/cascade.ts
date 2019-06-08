@@ -1,4 +1,3 @@
-import generate from "@babel/generator";
 import {
   Expression,
   Statement,
@@ -15,6 +14,7 @@ import {
   expressionStatement
 } from "@babel/types";
 import { deferred } from "./names";
+import { tagLoc } from "./tag";
 
 type Table = ArrayExpression;
 
@@ -23,7 +23,7 @@ type Thunk = FunctionExpression | ArrowFunctionExpression;
 export function cascade(
   object: Expression,
   statements: Statement[] = [],
-  names: Set<string>
+  names: Set<string>,
 ) {
   return statements
     .filter(statement => statement.type === "ExpressionStatement")
@@ -36,7 +36,7 @@ export function cascade(
     )
     .reduce(
       (memo: Expression | CallExpression, expression: CallExpression) =>
-        operator(memo, expression, names),
+        tagLoc(operator(memo, expression, names), expression.loc),
       object
     );
 }
@@ -44,7 +44,7 @@ export function cascade(
 export function operator(
   object: Expression,
   expression: CallExpression,
-  names: Set<string>
+  names: Set<string>,
 ): CallExpression {
   const id = expression.callee as Identifier;
 
@@ -53,7 +53,7 @@ export function operator(
     parameters(
       id,
       expression.arguments as [Expression, Table | Thunk, Thunk?],
-      names
+      names,
     )
   );
 }
@@ -61,7 +61,7 @@ export function operator(
 export function parameters(
   id: Identifier,
   args: [Expression, Table | Thunk, Thunk?],
-  names: Set<string>
+  names: Set<string>,
 ): [Expression, (Table | Thunk)?, Thunk?] {
   if (deferred.has(id.name)) {
     return args;
@@ -84,7 +84,7 @@ export function parameters(
 
 export function closureCapture(
   thunk: Thunk,
-  names: Set<string>
+  names: Set<string>,
 ): ArrowFunctionExpression {
   return arrowFunctionExpression(
     [identifier("$suite$")],
@@ -93,7 +93,7 @@ export function closureCapture(
       thunk.body.type === "BlockStatement"
         ? thunk.body.body
         : [expressionStatement(thunk.body)],
-      names
+      names,
     )
   );
 }

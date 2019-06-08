@@ -14,11 +14,17 @@ import {
 import { partition } from "@topl/tack";
 import { cascade } from "./cascade";
 
+function tap(it) {
+  console.log(it);
+  return it;
+}
+
 export function canter(
   body: Statement[],
   names: Set<string>,
   filename: string | null = null,
-  frameworkId: string = "@topl/hiho"
+  frameworkId: string = "@topl/hiho",
+  code?: string
 ): Statement[] {
   const [suites, statements] = partition(
     statement =>
