@@ -11,11 +11,10 @@ import {
   arrowFunctionExpression,
   identifier,
   ArrayExpression,
-  expressionStatement,
-  SourceLocation
+  expressionStatement
 } from "@babel/types";
 import { deferred } from "./names";
-import { infos } from "./tag";
+import { tagLoc } from "./tag";
 
 type Table = ArrayExpression;
 
@@ -37,7 +36,10 @@ export function cascade(
     )
     .reduce(
       (memo: Expression | CallExpression, expression: CallExpression) =>
-        operator(memo, expression, names, expression.loc),
+        memberExpression(
+          tagLoc(operator(memo, expression, names), expression.loc),
+          identifier("parent")
+        ),
       object
     );
 }
@@ -45,8 +47,7 @@ export function cascade(
 export function operator(
   object: Expression,
   expression: CallExpression,
-  names: Set<string>,
-  loc: SourceLocation
+  names: Set<string>
 ): CallExpression {
   const id = expression.callee as Identifier;
 
@@ -55,8 +56,7 @@ export function operator(
     parameters(
       id,
       expression.arguments as [Expression, Table | Thunk, Thunk?],
-      names,
-      infos({ loc })
+      names
     )
   );
 }
@@ -64,8 +64,7 @@ export function operator(
 export function parameters(
   id: Identifier,
   args: [Expression, Table | Thunk, Thunk?],
-  names: Set<string>,
-  infos: Expression
+  names: Set<string>
 ): [Expression, (Table | Thunk)?, Thunk?] {
   if (deferred.has(id.name)) {
     return args;
@@ -82,8 +81,7 @@ export function parameters(
     table,
     thunk &&
       ("BlockStatement" !== thunk.body.type || thunk.body.body.length > 0) &&
-      closureCapture(thunk, names),
-    infos
+      closureCapture(thunk, names)
   ].filter(Boolean) as [Expression, (Table | Thunk)?, Thunk?];
 }
 

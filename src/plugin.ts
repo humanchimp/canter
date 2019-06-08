@@ -12,7 +12,10 @@ import { canter } from "./canter";
 
 const stableDsl = [...stacking, ...deferred];
 
-export default function(filename: string = null, names: Set<string> = new Set(stableDsl)) {
+export default function(
+  filename: string = null,
+  names: Set<string> = new Set(stableDsl)
+) {
   const junk = `_$canter$`;
 
   function mangleShadowedNameVisitor(name: string): Visitor {

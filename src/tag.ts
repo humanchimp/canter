@@ -8,20 +8,20 @@ import {
   objectProperty,
   numericLiteral,
   ObjectExpression,
-  stringLiteral,
-  arrayExpression
+  stringLiteral
 } from "@babel/types";
 
-export function infos({ loc }: { loc: SourceLocation }): ObjectExpression {
-  return objectExpression([
-    objectProperty(identifier("infos"), arrayExpression([
-      objectExpression([
-        objectProperty(identifier("type"), stringLiteral("SourceLocation")),
-        objectProperty(identifier("start"), sourcePosition(loc.start)),
-        objectProperty(identifier("end"), sourcePosition(loc.end))
-      ])
-    ]))
-  ])
+export function tagLoc(
+  op: CallExpression,
+  loc: SourceLocation
+): CallExpression {
+  return callExpression(memberExpression(op, identifier("info")), [
+    objectExpression([
+      objectProperty(identifier("type"), stringLiteral("SourceLocation")),
+      objectProperty(identifier("start"), sourcePosition(loc.start)),
+      objectProperty(identifier("end"), sourcePosition(loc.end))
+    ])
+  ]);
 }
 
 export function sourcePosition(position: {
