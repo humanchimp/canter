@@ -1,35 +1,23 @@
+import generate from "@babel/generator";
 import {
   CallExpression,
   callExpression,
-  SourceLocation,
   memberExpression,
   identifier,
   objectExpression,
   objectProperty,
-  numericLiteral,
-  ObjectExpression,
-  stringLiteral
+  stringLiteral,
+  Expression
 } from "@babel/types";
 
-export function tagLoc(
+export function tagCode(
   op: CallExpression,
-  loc: SourceLocation
+  expression: Expression
 ): CallExpression {
   return callExpression(memberExpression(op, identifier("info")), [
     objectExpression([
-      objectProperty(identifier("type"), stringLiteral("SourceLocation")),
-      objectProperty(identifier("start"), sourcePosition(loc.start)),
-      objectProperty(identifier("end"), sourcePosition(loc.end))
+      objectProperty(identifier("type"), stringLiteral("SourceCode")),
+      objectProperty(identifier("code"), stringLiteral(generate(expression).code)),
     ])
-  ]);
-}
-
-export function sourcePosition(position: {
-  line: number;
-  column: number;
-}): ObjectExpression {
-  return objectExpression([
-    objectProperty(identifier("line"), numericLiteral(position.line)),
-    objectProperty(identifier("column"), numericLiteral(position.column))
   ]);
 }

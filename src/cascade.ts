@@ -1,3 +1,4 @@
+import generate from "@babel/generator";
 import {
   Expression,
   Statement,
@@ -14,7 +15,7 @@ import {
   expressionStatement
 } from "@babel/types";
 import { deferred } from "./names";
-import { tagLoc } from "./tag";
+import { tagCode } from "./tag";
 
 type Table = ArrayExpression;
 
@@ -27,7 +28,7 @@ export function cascade(
 ) {
   return statements
     .filter(statement => statement.type === "ExpressionStatement")
-    .map((statement: ExpressionStatement) => statement.expression)
+    .map((statement: ExpressionStatement) => (generate(statement.expression), statement.expression))
     .filter(
       expression =>
         expression.type === "CallExpression" &&
@@ -35,11 +36,12 @@ export function cascade(
         names.has(expression.callee.name)
     )
     .reduce(
-      (memo: Expression | CallExpression, expression: CallExpression) =>
-        memberExpression(
-          tagLoc(operator(memo, expression, names), expression.loc),
+      (memo: Expression | CallExpression, expression: CallExpression) => {
+        return memberExpression(
+          tagCode(operator(memo, expression, names), expression),
           identifier("parent")
-        ),
+        );
+      },
       object
     );
 }

@@ -19,7 +19,6 @@ export function canter(
   names: Set<string>,
   filename: string | null = null,
   frameworkId: string = "@topl/hiho",
-  code?: string
 ): Statement[] {
   const [suites, statements] = partition(
     statement =>
