@@ -15,7 +15,7 @@
     "@topl/stable": "^0.5.22",
     "@wessberg/rollup-plugin-ts": "^1.1.55",
     "nyc": "^14.1.1",
-    "rollup": "^1.15.3",
+    "rollup": "^1.15.5",
     "typescript": "^3.5.1"
   },
   "nyc": {
