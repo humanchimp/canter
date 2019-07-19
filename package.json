@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.4.5",
-    "@babel/types": "^7.4.4",
+    "@babel/types": "^7.5.5",
     "@topl/tack": "^1.0.6",
     "@types/babel-traverse": "^6.25.5",
     "@types/babel-types": "^7.0.7"
