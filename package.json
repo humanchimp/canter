@@ -12,7 +12,7 @@
     "prepublishOnly": "yarn test && yarn build && mv dist/cjs/canter.d.ts* dist && rm dist/*/canter.d.ts*"
   },
   "devDependencies": {
-    "@topl/stable": "^0.5.23",
+    "@topl/stable": "^0.5.24",
     "@wessberg/rollup-plugin-ts": "^1.1.62",
     "nyc": "^14.1.1",
     "rollup": "^1.17.0",
